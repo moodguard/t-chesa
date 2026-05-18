@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>T Chesa — Autarkes Hausbau-Konzept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #243e5a;
+    --primary-soft: #2f4d6f;
+    --accent: #5b8bb8;
+    --accent-soft: #a8c5e0;
+    --accent-pale: #e8f0f8;
+    --bg: #ffffff;
+    --bg-soft: #fafbfc;
+    --bg-warm: #f5f6f8;
+    --text: #1a1a1a;
+    --text-muted: #6e7378;
+    --text-subtle: #9aa0a6;
+    --border: rgba(36, 62, 90, 0.08);
+    --shadow-sm: 0 1px 3px rgba(36, 62, 90, 0.04), 0 1px 2px rgba(36, 62, 90, 0.06);
+    --shadow-md: 0 4px 20px rgba(36, 62, 90, 0.06), 0 2px 8px rgba(36, 62, 90, 0.04);
+    --shadow-lg: 0 20px 60px rgba(36, 62, 90, 0.10), 0 8px 24px rgba(36, 62, 90, 0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  html {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  body {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Prevent long words from breaking layout */
+  h1, h2, h3, h4, h5, p {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .display-font {
+    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  /* ============================================
+     VIBECODE EFFECT
+     em tags scale from upright into italic
+     when they scroll into view
+     ============================================ */
+  em {
+    font-style: normal;
+    display: inline-block;
+    transform: scaleX(0.96);
+    transform-origin: left center;
+    opacity: 0.7;
+    transition:
+      font-style 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.45s ease,
+      color 0.45s ease,
+      letter-spacing 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+
+  em.vibe-on {
+    font-style: italic;
+    transform: scaleX(1) skewX(-1deg);
+    opacity: 1;
+    letter-spacing: 0.003em;
+  }
+
+  /* respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    em {
+      font-style: italic;
+      transition: none;
+      transform: none;
+      opacity: 1;
+    }
+    em.vibe-on { transform: none; }
+  }
+
+  /* Floating Contact Widget (chat-bot style, bottom right) */
+  .contact-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    font-family: 'Manrope', sans-serif;
+  }
+
+  .contact-fab {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 8px 24px rgba(36, 62, 90, 0.25), 0 4px 12px rgba(36, 62, 90, 0.15);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    /* Desktop default: round 64px FAB */
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .contact-fab:hover {
+    background: var(--primary-soft);
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(36, 62, 90, 0.30), 0 6px 16px rgba(36, 62, 90, 0.20);
+  }
+
+  .contact-fab-toggle {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    position: relative;
+  }
+
+  .contact-fab-toggle svg { transition: transform 0.3s ease; }
+
+  .contact-fab-toggle .icon-close {
+    position: absolute;
+    opacity: 0;
+    transform: rotate(-90deg);
+    transition: all 0.3s ease;
+  }
+
+  .contact-widget.open .contact-fab-toggle .icon-chat {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+
+  .contact-widget.open .contact-fab-toggle .icon-close {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  .contact-fab::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: var(--accent-soft);
+    opacity: 0.4;
+    z-index: -1;
+    animation: pulse 2s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  .contact-widget.open .contact-fab::before { display: none; }
+
+  .contact-panel {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 380px;
+    max-width: calc(100vw - 48px);
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(36, 62, 90, 0.25), 0 8px 24px rgba(36, 62, 90, 0.12);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transform-origin: bottom right;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .contact-widget.open .contact-panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+
+  .contact-header {
+    background: var(--primary);
+    color: white;
+    padding: 24px 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-header::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.3;
+    border-radius: 50%;
+  }
+
+  .contact-header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: white;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .contact-avatar-info strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .contact-avatar-info span {
+    font-size: 12px;
+    color: var(--accent-soft);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .contact-avatar-info span::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  }
+
+  .contact-header h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.25;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-header h3 em {
+    font-style: italic;
+    color: var(--accent-soft);
+    transform: none;
+    opacity: 1;
+  }
+
+  .contact-body { padding: 20px 20px 24px; }
+
+  .contact-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    background: white;
+  }
+
+  .contact-option:hover {
+    background: var(--accent-pale);
+    border-color: var(--accent-soft);
+    transform: translateX(2px);
+  }
+
+  .contact-option-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--accent-pale);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .contact-option-text { flex: 1; min-width: 0; }
+
+  .contact-option-text strong {
+    display: block;
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .contact-option-text span {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .contact-option-arrow {
+    color: var(--text-subtle);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .contact-option:hover .contact-option-arrow {
+    color: var(--primary);
+    transform: translateX(3px);
+  }
+
+  .contact-footer {
+    padding: 14px 20px;
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-subtle);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 480px) {
+    .contact-widget { bottom: 16px; right: 16px; }
+    .contact-fab {
+      width: auto;
+      height: 56px;
+      border-radius: 28px;
+      padding: 6px 6px 6px 0;
+      gap: 4px;
+    }
+    .contact-fab-toggle {
+      width: auto;
+      height: 100%;
+      padding: 0 4px 0 18px;
+      border-radius: 28px 0 0 28px;
+      gap: 8px;
+    }
+    .contact-fab-toggle .icon-chat {
+      width: 22px;
+      height: 22px;
+    }
+    .contact-fab-toggle .icon-close {
+      width: 20px;
+      height: 20px;
+    }
+    .contact-fab-label {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: white;
+    }
+    .contact-fab-actions {
+      display: inline-flex;
+      gap: 4px;
+      padding-left: 4px;
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      margin-left: 4px;
+    }
+    .contact-quick {
+      width: 44px;
+      height: 44px;
+      border-radius: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .contact-quick:active {
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(0.92);
+    }
+    .contact-panel {
+      width: calc(100vw - 32px);
+      bottom: 76px;
+      right: 0;
+    }
+    /* Hide pulse on mobile pill - it doesn't work well with non-circle */
+    .contact-fab::before { display: none; }
+    /* When panel is open, hide the quick actions to keep the close icon clean */
+    .contact-widget.open .contact-fab-actions {
+      display: none;
+    }
+    .contact-widget.open .contact-fab {
+      width: 56px;
+      padding: 0;
+      border-radius: 50%;
+    }
+    .contact-widget.open .contact-fab-toggle {
+      width: 100%;
+      padding: 0;
+      border-radius: 50%;
+    }
+    .contact-widget.open .contact-fab-label {
+      display: none;
+    }
+  }
+
+  /* Hide quick-actions and label on desktop */
+  @media (min-width: 481px) {
+    .contact-fab-label,
+    .contact-fab-actions { display: none; }
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 80px 32px 80px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--accent-pale) 100%);
+    overflow: hidden;
+  }
+
+  .hero-logo {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  .hero-logo img {
+    height: 64px;
+    width: auto;
+    display: block;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+    opacity: 0.4;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    max-width: 1100px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    padding: 8px 16px;
+    background: white;
+    border-radius: 100px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeUp 0.8s ease-out;
+  }
+
+  .hero-title {
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 1.02;
+    color: var(--primary);
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease-out 0.1s both;
+    font-weight: 300;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: clamp(18px, 2vw, 22px);
+    color: var(--text-muted);
+    max-width: 720px;
+    margin: 0 auto 0;
+    line-height: 1.6;
+    font-weight: 300;
+    animation: fadeUp 0.8s ease-out 0.2s both;
+  }
+
+  .hero-sub em {
+    color: var(--primary);
+    font-weight: 500;
+    margin-right: 4px;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s ease-out 0.3s both;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-soft);
+    transform: translateY(-2px);
+  }
+
+  .arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .btn-primary:hover .arrow,
+  .btn-secondary:hover .arrow { transform: translateX(4px); }
+
+  .hero-image {
+    margin-top: 80px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    animation: fadeUp 1s ease-out 0.4s both;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Sections */
+  section {
+    padding: 140px 32px;
+    position: relative;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .section-title {
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.1;
+    color: var(--primary);
+    margin-bottom: 24px;
+    max-width: 900px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+
+  .section-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .section-sub {
+    font-size: 20px;
+    color: var(--text-muted);
+    max-width: 680px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* Vision Section */
+  .vision {
+    background: var(--bg-warm);
+  }
+
+  .vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 80px;
+  }
+
+  .vision-text h3 {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 24px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .vision-text p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .vision-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid var(--border);
+  }
+
+  .stat-value {
+    font-size: clamp(26px, 2.6vw, 36px);
+    color: var(--primary);
+    font-weight: 300;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .vision-image {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    aspect-ratio: 4/5;
+  }
+
+  .vision-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Features grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 80px;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 32px;
+    border: 1px solid var(--border);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-soft);
+  }
+
+  .feature-card:hover::before { transform: scaleX(1); }
+
+  .feature-number {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .feature-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--accent-pale);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: var(--primary);
+  }
+
+  .feature-card h3 {
+    font-size: 20px;
+    color: var(--primary);
+    margin-bottom: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .feature-card p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Technology section */
+  .tech {
+    background: var(--primary);
+    color: white;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .tech::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.15;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .tech .section-title { color: white; }
+  .tech .section-title em { color: var(--accent-soft); }
+  .tech .section-eyebrow { color: var(--accent-soft); }
+  .tech .section-sub { color: rgba(255, 255, 255, 0.7); }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 80px;
+  }
+
+  .tech-hero-image {
+    margin-top: 64px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.2);
+    background: white;
+  }
+
+  .tech-hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Bau & Skalierung — full-width with image hero */
+  .bauweise {
+    padding: 0;
+    background: var(--bg-warm);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  .bauweise-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    overflow: hidden;
+  }
+
+  .bauweise-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 1.2s ease;
+  }
+
+  .bauweise-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(36, 62, 90, 0) 60%, rgba(245, 246, 248, 0.4) 100%);
+    pointer-events: none;
+  }
+
+  .bauweise-content {
+    padding: 100px 32px 120px;
+    background: var(--bg-warm);
+  }
+
+  .bauweise-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .bauweise-text .section-eyebrow {
+    color: var(--accent);
+  }
+
+  .bauweise-text .section-title {
+    color: var(--primary);
+    margin-bottom: 28px;
+  }
+
+  .bauweise-text .section-title em {
+    color: var(--accent);
+  }
+
+  .bauweise-text .section-sub {
+    color: var(--text-muted);
+  }
+
+  .bauweise-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .bauweise-stat {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 32px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .bauweise-stat:hover {
+    border-color: var(--accent-soft);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .bauweise-stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 4.5vw, 56px);
+    color: var(--primary);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+
+  .bauweise-stat-label {
+    font-size: 13px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .bauweise-stat p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .bauweise-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .bauweise-image-wrap {
+      aspect-ratio: 16 / 11;
+    }
+    .bauweise-content {
+      padding: 60px 20px 80px;
+    }
+  }
+  .tech-showcase {
+    margin-top: 96px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 64px;
+    align-items: center;
+    padding: 56px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(91, 139, 184, 0.08) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    backdrop-filter: blur(20px);
+  }
+
+  .tech-showcase-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-soft);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .tech-showcase-text h3 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 3.2vw, 42px);
+    line-height: 1.1;
+    color: white;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .tech-showcase-text h3 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent-soft);
+  }
+
+  .tech-showcase-text p {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 16px;
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+
+  .tech-showcase-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tech-showcase-tags span {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .tech-showcase-image {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .tech-showcase-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    .tech-showcase {
+      grid-template-columns: 1fr;
+      padding: 36px 24px;
+      gap: 36px;
+    }
+  }
+
+  .tech-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .tech-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-soft);
+    transform: translateY(-2px);
+  }
+
+  .tech-num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    color: var(--accent-soft);
+    font-weight: 300;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 48px;
+  }
+
+  .tech-content h4 {
+    font-size: 17px;
+    color: white;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .tech-content p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.5;
+  }
+
+  /* Projects */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 80px;
+  }
+
+  .project-card {
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--bg-soft);
+    transition: all 0.4s ease;
+    cursor: pointer;
+  }
+
+  .project-image {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .project-card:hover .project-image img {
+    transform: scale(1.05);
+  }
+
+  .project-info {
+    padding: 28px;
+  }
+
+  .project-info .label {
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .project-info h3 {
+    font-size: 22px;
+    color: var(--primary);
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .project-info p {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Business models */
+  .business {
+    background: var(--bg-warm);
+  }
+
+  /* Einsetzbar als / Hausmodelle */
+  .einsetzbar {
+    margin-top: 80px;
+    background: var(--bg-soft);
+    border-radius: 32px;
+    padding: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 48px;
+    align-items: center;
+    border: 1px solid var(--border);
+  }
+
+  .einsetzbar-text {
+    min-width: 0;
+  }
+
+  .einsetzbar-text .section-eyebrow {
+    margin-bottom: 16px;
+    margin-top: 0;
+  }
+
+  .einsetzbar-text h3 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(24px, 3vw, 40px);
+    line-height: 1.15;
+    color: var(--primary);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .einsetzbar-text h3 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .einsetzbar-text p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .einsetzbar-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .wohnform {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    transition: all 0.3s ease;
+    min-width: 0;
+  }
+
+  .wohnform:hover {
+    border-color: var(--accent-soft);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .wohnform svg {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .wohnform span {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary);
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  @media (max-width: 900px) {
+    .einsetzbar {
+      grid-template-columns: 1fr;
+      padding: 36px 24px;
+      gap: 28px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .einsetzbar {
+      padding: 28px 20px;
+      border-radius: 24px;
+    }
+    .einsetzbar-list {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .wohnform {
+      padding: 14px 16px;
+      gap: 12px;
+    }
+    .wohnform span {
+      font-size: 14px;
+    }
+  }
+
+  .business-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 80px;
+  }
+
+  .business-card {
+    background: white;
+    padding: 36px 28px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .business-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent-soft);
+  }
+
+  .business-num {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    color: var(--accent-pale);
+    font-weight: 300;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .business-card h3 {
+    font-size: 18px;
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .business-card p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Market */
+  .market-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 80px;
+  }
+
+  .market-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .market-pill {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .market-pill:hover {
+    border-color: var(--accent);
+    transform: translateX(8px);
+  }
+
+  .market-pill-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--accent-pale);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--primary);
+  }
+
+  .market-pill-text h4 {
+    font-size: 17px;
+    color: var(--primary);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .market-pill-text p {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .market-quote {
+    background: var(--primary);
+    color: white;
+    padding: 56px 48px;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .market-quote::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.2;
+    border-radius: 50%;
+  }
+
+  .market-quote-label {
+    font-size: 12px;
+    color: var(--accent-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .market-quote h3 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+  }
+
+  .market-quote h3 em {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--accent-soft);
+    font-weight: 400;
+  }
+
+  .market-quote p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Founder */
+  .founder {
+    background: linear-gradient(180deg, white 0%, var(--accent-pale) 100%);
+  }
+
+  .founder-content {
+    max-width: 1100px;
+    margin: 80px auto 0;
+  }
+
+  .founder-portrait-block {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 64px;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+
+  .founder-portrait {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .founder-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(36, 62, 90, 0.15) 100%);
+    pointer-events: none;
+  }
+
+  .founder-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .founder-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .founder-portrait-info h3 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 4vw, 52px);
+    line-height: 1.1;
+    color: var(--primary);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .founder-role {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    font-weight: 400;
+  }
+
+  .founder-quote-inline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(20px, 2.2vw, 26px);
+    line-height: 1.4;
+    color: var(--primary);
+    font-weight: 300;
+    border-left: 3px solid var(--accent);
+    padding-left: 24px;
+  }
+
+  .founder-bio {
+    background: white;
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: var(--shadow-md);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .founder-bio.founder-bio-single {
+    grid-template-columns: 1fr;
+  }
+
+  .founder-bio h4 {
+    font-size: 13px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .founder-bio.founder-bio-single h4 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(24px, 2.6vw, 32px);
+    color: var(--primary);
+    text-transform: none;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+
+  .founder-bio p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .founder-bio.founder-bio-single p {
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  @media (max-width: 900px) {
+    .founder-portrait-block {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .founder-portrait {
+      max-width: 320px;
+    }
+  }
+
+  /* CTA */
+  .cta {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.15;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .cta h2 {
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.1;
+    margin-bottom: 32px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+
+  .cta h2 em {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--accent-soft);
+    font-weight: 400;
+  }
+
+  .cta p {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta-buttons .btn-primary {
+    background: white;
+    color: var(--primary);
+  }
+
+  .cta-buttons .btn-primary:hover {
+    background: var(--accent-pale);
+  }
+
+  .cta-buttons .btn-secondary {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .cta-buttons .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+  }
+
+  .cta-contact {
+    margin-top: 80px;
+    padding-top: 48px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    text-align: left;
+  }
+
+  .contact-block h5 {
+    font-size: 12px;
+    color: var(--accent-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .contact-block a, .contact-block p {
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+    line-height: 1.5;
+    display: block;
+  }
+
+  .contact-block a:hover { color: var(--accent-soft); }
+
+  /* Footer */
+  footer {
+    background: #0e1f30;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 48px 32px;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  footer img {
+    height: 24px;
+    margin-bottom: 24px;
+    opacity: 0.7;
+    filter: brightness(0) invert(1);
+  }
+
+  footer p { margin-bottom: 8px; }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  /* ============================================
+     RESPONSIVE BREAKPOINTS
+     ============================================ */
+
+  /* Tablet landscape */
+  @media (max-width: 1024px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .business-grid { grid-template-columns: repeat(2, 1fr); }
+    .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    .vision-grid { grid-template-columns: 1fr; gap: 48px; }
+    .market-content { grid-template-columns: 1fr; gap: 48px; }
+    .tech-grid { grid-template-columns: 1fr; }
+    .tech-showcase { grid-template-columns: 1fr; gap: 36px; padding: 36px; }
+    .bauweise-grid { grid-template-columns: 1fr; gap: 48px; }
+    .bauweise-content { padding: 60px 24px 80px; }
+    .einsetzbar { grid-template-columns: 1fr; padding: 36px 24px; gap: 32px; }
+    .founder-portrait-block { grid-template-columns: 1fr; gap: 32px; }
+    .founder-portrait { max-width: 320px; }
+    .founder-bio { grid-template-columns: 1fr; gap: 24px; }
+    .cta-contact { grid-template-columns: 1fr; gap: 32px; }
+    .vision-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Tablet portrait & large phone */
+  @media (max-width: 768px) {
+    section { padding: 80px 24px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .business-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .feature-card[style*="span 2"] { grid-column: span 1 !important; }
+    .tech-item[style*="span 2"] { grid-column: span 1 !important; }
+    .bauweise-image-wrap { aspect-ratio: 16 / 11; }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    section { padding: 64px 20px; }
+    .hero { padding: 90px 20px 60px; min-height: 90vh; }
+    .hero-logo { top: 24px; }
+    .hero-logo img { height: 44px; }
+    .hero-eyebrow { font-size: 11px; padding: 6px 14px; }
+    .hero-title { font-size: clamp(40px, 12vw, 72px); }
+    .hero-sub { font-size: 16px; }
+    .hero-sub em { display: inline-block; }
+    .vision-stats { grid-template-columns: 1fr; gap: 16px; }
+    .stat-card { padding: 20px; }
+    .stat-value { font-size: 28px; }
+    .market-quote { padding: 32px 24px; }
+    .market-quote h3 { font-size: 24px; }
+    .founder-bio { padding: 24px; }
+    .founder-bio p { font-size: 14px; }
+    .bauweise-content { padding: 48px 20px 64px; }
+    .bauweise-stat { padding: 24px; }
+    .bauweise-stat-value { font-size: 44px; }
+    .feature-card, .business-card, .tech-item { padding: 24px; }
+    .tech-showcase { padding: 24px; }
+    .tech-showcase-text h3 { font-size: 24px; }
+    .tech-showcase-tags span { font-size: 12px; padding: 6px 10px; }
+    .cta { padding: 80px 20px; }
+    .cta h2 { font-size: 32px; }
+    .cta p { font-size: 16px; }
+    .section-title { font-size: clamp(28px, 8vw, 40px); }
+    .section-sub { font-size: 16px; }
+  }
+
+  /* Small mobile */
+  @media (max-width: 380px) {
+    section { padding: 56px 16px; }
+    .hero { padding: 80px 16px 48px; }
+    .feature-card, .business-card { padding: 20px; }
+    .tech-item { padding: 20px; gap: 14px; }
+    .tech-num { font-size: 26px; width: 36px; }
+    .bauweise-content { padding: 40px 16px 56px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-logo">
+    <img src="assets/logo.svg" alt="T Chesa" />
+  </div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">Autarkes Hausbau-Konzept</span>
+    <h1 class="hero-title display-font">
+      Wohnen der<br><em>Zukunft.</em>
+    </h1>
+    <p class="hero-sub">
+      <em>Kostengünstig.</em> <em>Energieautark.</em> <em>Unabhängig.</em> <em>Nachhaltig.</em> <em>Skalierbar.</em><br>
+      Fünf Eigenschaften, ein Hauskonzept — entwickelt, um den Wohnungsmarkt neu zu definieren.
+    </p>
+  </div>
+</section>
+
+<!-- Vision -->
+<section class="vision" id="vision">
+  <div class="container">
+    <span class="section-eyebrow reveal">Die Vision</span>
+    <h2 class="section-title display-font reveal">
+      Bauen in einer Ära<br>steigender <em>Energiekosten.</em>
+    </h2>
+    <p class="section-sub reveal">
+      Während Baukosten, CO₂-Preise und Energierechnungen immer weiter stark steigen, entwickelt T Chesa Häuser, deren Energiekosten gegen Null tendieren — bilanziell autark, technisch ausgereift, serienfähig.
+    </p>
+
+    <div class="vision-grid">
+      <div class="vision-text reveal">
+        <h3>Ein neuer Standard für Wohnimmobilien.</h3>
+        <p>
+          Hochleistungsdämmung, moderne Flächenheizung, Photovoltaik mit Speicher und intelligente Smart-Home-Steuerung verbinden sich zu einem Gesamtsystem. Das Ergebnis: Ein Haus, das mehr produziert als es verbraucht.
+        </p>
+        <p>
+          Konzipiert in Holzständerbauweise mit industrieller Vorfertigung — ein Standardhaus entsteht in nur 4 bis 6 Monaten und setzt ökologisch, ökonomisch und gesundheitlich neue Maßstäbe.
+        </p>
+        <div class="vision-stats">
+          <div class="stat-card">
+            <div class="stat-value">3.900 €</div>
+            <div class="stat-label">pro m² · Standardhaus</div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">inkl. PV &amp; Technik · abhängig von der individuellen Gestaltung</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">4–6</div>
+            <div class="stat-label">Monate · Standardhaus</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">Bilanziell</div>
+            <div class="stat-label">autark</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Projekte realisiert</div>
+          </div>
+        </div>
+      </div>
+      <div class="vision-image reveal">
+        <img src="assets/haus1.jpg" alt="T Chesa Haus" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features / USP -->
+<section id="features">
+  <div class="container">
+    <span class="section-eyebrow reveal">Wettbewerbsvorteile</span>
+    <h2 class="section-title display-font reveal">
+      Sieben Gründe, warum T Chesa<br><em>anders</em> ist.
+    </h2>
+    <p class="section-sub reveal">
+      Höhere Bewertung, bessere Finanzierbarkeit, niedrigere Lebenszykluskosten — und das bei allerhöchstem Wohnkomfort. Alle Materialien wurden so ausgewählt, dass sie höchste Ansprüche an die Nachhaltigkeit erfüllen.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-number">01 · UNABHÄNGIGKEIT</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/><path d="M12 12l8-5M12 12v10M12 12L4 7"/></svg>
+        </div>
+        <h3>Bilanzielle Autarkie</h3>
+        <p>Bilanzielle Unabhängigkeit von Energieversorgern durch PV-Anlage und Batteriespeicher.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-number">02 · QUALITÄT</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Premium-Standard</h3>
+        <p>Bessere Wärmewerte, hohe Raumhöhen (2,90 m lichtes Maß), modernste Smart-Home-Technik — extrem kostengünstig.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-number">03 · WERTSTEIGERUNG</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>Höhere Immobilien-Bewertung</h3>
+        <p>Energieautarke Häuser erzielen am Markt überdurchschnittliche Bewertungen und Wiederverkaufswerte.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-number">04 · NEBENKOSTEN</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+        </div>
+        <h3>Keine Nebenkosten für Wärme und Strom</h3>
+        <p>Eigenproduktion deckt den Energiebedarf — die klassischen Nebenkosten für Heizung, Warmwasser und Strom entfallen.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-number">05 · FINANZIERUNG</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </div>
+        <h3>Bankenfreundlich</h3>
+        <p>Keine Nebenkosten bedeutet höhere Tilgungsfähigkeit — bessere Konditionen bei Bauträgern und Banken.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-number">06 · EINNAHMEN</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7c-1.5-2-4-3-7-3a8 8 0 100 16c3 0 5.5-1 7-3"/><line x1="3" y1="10" x2="14" y2="10"/><line x1="3" y1="14" x2="13" y2="14"/></svg>
+        </div>
+        <h3>Einspeisung als Ertrag</h3>
+        <p>Überschüssige Energie wird ins Netz eingespeist und generiert laufende Einnahmen. Abhängig von der aktuellen Einspeisevergütung.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-number">07 · GESUNDHEIT</span>
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+        <h3>Gesundes Wohnklima</h3>
+        <p>Pollenfilterung, staubarme Umgebung und hohe Schalldämmung — ideal für Allergiker und Familien.</p>
+      </div>
+
+      <div class="feature-card reveal" style="grid-column: span 2;">
+        <span class="feature-number">KOSTENERSPARNIS</span>
+        <h3 style="font-size: clamp(20px, 2.4vw, 28px); line-height: 1.3; margin-top: 12px;">
+          Über einen Zeitraum von 20 Jahren belaufen sich die Energiekosten bei einem klassischen Haus auf <strong style="color: var(--accent);">193.467 €</strong>. Bei einem T Chesa Haus <strong style="color: var(--primary);">entfallen diese Kosten</strong>.
+        </h3>
+        <p style="margin-top: 16px; font-size: 15px;">Berechnungsgrundlage: 150 m² Haus, 4 € monatliche Nebenkosten pro m² für Wärme, Strom und Warmwasser (7.200 € p.a.), 3 % Energiepreissteigerung pro Jahr.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Technology -->
+<section class="tech" id="technologie">
+  <div class="container">
+    <span class="section-eyebrow reveal">Technologie</span>
+    <h2 class="section-title display-font reveal">
+      Sieben Komponenten.<br>Ein <em>perfektes System.</em>
+    </h2>
+    <p class="section-sub reveal">
+      Das System ist perfekt auf die thermische Leistung der Gebäudestruktur, der Fenster, der Lüftung und der Deckenhöhe abgestimmt.
+    </p>
+
+    <div class="tech-grid">
+      <div class="tech-item reveal">
+        <div class="tech-num">01</div>
+        <div class="tech-content">
+          <h4>Hochleistungsdämmung</h4>
+          <p>Minimiert Wärmeverluste auf ein Niveau weit unter aktuellen KfW-Standards.</p>
+        </div>
+      </div>
+      <div class="tech-item reveal">
+        <div class="tech-num">02</div>
+        <div class="tech-content">
+          <h4>Effizientes Lüftungssystem</h4>
+          <p>Mit Wärmerückgewinnung — sorgt für konstante, beste Luftqualität. Komplett in der Installationsebene versteckt, kein separater Technikraum nötig.</p>
+        </div>
+      </div>
+      <div class="tech-item reveal">
+        <div class="tech-num">03</div>
+        <div class="tech-content">
+          <h4>Elektrische Flächenheizung</h4>
+          <p>Niederspannung erzeugt angenehme Strahlungswärme — keine Leitungen, kein Heizkörper, keine Wärmepumpe, keine Wartungskosten.</p>
+        </div>
+      </div>
+      <div class="tech-item reveal">
+        <div class="tech-num">04</div>
+        <div class="tech-content">
+          <h4>PV-Anlage + Batteriespeicher</h4>
+          <p>Eigenproduktion und Speicherung der Energie — Tag und Nacht autark.</p>
+        </div>
+      </div>
+      <div class="tech-item reveal">
+        <div class="tech-num">05</div>
+        <div class="tech-content">
+          <h4>Smart-Home-Steuerung</h4>
+          <p>Zentrale Kontrolle aller Systeme über das iPad oder Smartphone — gesteuert mit Loxone.</p>
+        </div>
+      </div>
+      <div class="tech-item reveal">
+        <div class="tech-num">06</div>
+        <div class="tech-content">
+          <h4>Raumgenaue Sensorik</h4>
+          <p>CO₂-Gehalt, Luftfeuchtigkeit und Temperatur werden gemessen und überwacht.</p>
+        </div>
+      </div>
+      <div class="tech-item reveal" style="grid-column: span 2;">
+        <div class="tech-num">07</div>
+        <div class="tech-content">
+          <h4>Transparenter Energieverbrauch</h4>
+          <p>Jederzeit voller Überblick — von der Gesamtbilanz bis zum einzelnen Verbraucher. Datenbasiert wohnen, nachhaltig handeln.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-showcase reveal">
+      <div class="tech-showcase-text">
+        <span class="tech-showcase-label">Steuerung mit Loxone</span>
+        <h3>Das ganze Haus — auf <em>einen Blick.</em></h3>
+        <p>
+          Beleuchtung, Klima, Energiebilanz, Sicherheit, Kameras und Nachrichten in einem zentralen Bedienpanel. Intuitiv genug für jeden Tag, mächtig genug für volle Kontrolle.
+        </p>
+        <div class="tech-showcase-tags">
+          <span>Raumweise Steuerung</span>
+          <span>Live-Energiebilanz</span>
+          <span>Kamera-Integration</span>
+        </div>
+      </div>
+      <div class="tech-showcase-image">
+        <img src="assets/loxone_display.jpg" alt="Loxone Smart-Home-Steuerung — Übersicht von Beleuchtung, Klima, Energie, Sicherheit und Kameras" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Projekte -->
+<section id="projekte">
+  <div class="container">
+    <span class="section-eyebrow reveal">Realisiert</span>
+    <h2 class="section-title display-font reveal">
+      Vom Konzept zur <em>gebauten Realität.</em>
+    </h2>
+    <p class="section-sub reveal">
+      Drei Häuser wurden bereits erfolgreich umgesetzt — jedes ein Beweis für die technische und wirtschaftliche Tragfähigkeit des Konzepts.
+    </p>
+
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-image">
+          <img src="assets/reihenhaus.jpg" alt="T Chesa Reihenhaus mit 4 Einheiten" />
+        </div>
+        <div class="project-info">
+          <span class="label">Projekt 01</span>
+          <h3>Reihenhaus · 4 Einheiten</h3>
+          <p>320 m² Wohnfläche in einem effizienten Baukörper.</p>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-image">
+          <img src="assets/haus3.jpg" alt="T Chesa Ferienwohnungen" />
+        </div>
+        <div class="project-info">
+          <span class="label">Projekt 02</span>
+          <h3>Ferienwohnungen · 220 m²</h3>
+          <p>220 m² mit zwei separaten Wohneinheiten.</p>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-image">
+          <img src="assets/haus1.jpg" alt="T Chesa Einfamilienhaus" />
+        </div>
+        <div class="project-info">
+          <span class="label">Projekt 03</span>
+          <h3>Einfamilienhaus · 360 m²</h3>
+          <p>Klassische Architektur, kompromisslose Energieperformance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="einsetzbar reveal">
+      <div class="einsetzbar-text">
+        <span class="section-eyebrow">Einsetzbar als</span>
+        <h3>Eine Bauweise.<br>Alle <em>Wohnformen.</em></h3>
+        <p>Eine Bautechnologie, die jeden Wunsch erfüllt — in Holz, Putz, Ziegel oder Betonoptik. Individuelle Architektur.</p>
+      </div>
+      <div class="einsetzbar-list">
+        <div class="wohnform">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+          <span>Einfamilienhaus</span>
+        </div>
+        <div class="wohnform">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l4.5-5 4.5 5 4.5-5 4.5 5"/><path d="M5 10v10h4v-6h6v6h4V10"/></svg>
+          <span>Zweifamilienhaus</span>
+        </div>
+        <div class="wohnform">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20V8l4-4 4 4v12M10 20V8l4-4 4 4v12M18 20V8l4-4v16"/></svg>
+          <span>Reihenhaus</span>
+        </div>
+        <div class="wohnform">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+          <span>Mehrfamilienhaus</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bau & Skalierung -->
+<section class="bauweise">
+  <div class="bauweise-image-wrap reveal">
+    <img src="assets/holzstaender.jpg" alt="T Chesa Hausstruktur — Holzständerbauweise mit schwarzer Hochleistungsdämmung im Bauprozess" />
+    <div class="bauweise-image-overlay"></div>
+  </div>
+  <div class="bauweise-content">
+    <div class="container">
+      <div class="bauweise-grid">
+        <div class="bauweise-text reveal">
+          <span class="section-eyebrow">Bau &amp; Skalierung</span>
+          <h2 class="section-title display-font">
+            Industriell vorgefertigt.<br>In <em>Wochen</em> aufgebaut.
+          </h2>
+          <p class="section-sub">
+            Holzständerbauweise mit Hochleistungsdämmung — präzise im Werk vorgefertigt, vor Ort montiert. Ein Standardhaus entsteht in nur 4 bis 6 Monaten und ist sortenrein rückbaubar.
+          </p>
+        </div>
+        <div class="bauweise-stats reveal">
+          <div class="bauweise-stat">
+            <div class="bauweise-stat-value">Fast 100%</div>
+            <div class="bauweise-stat-label">Sortenrein recyclebar</div>
+            <p>Holz, Dämmung, Fassade — sortenrein rückbaubar.</p>
+          </div>
+          <div class="bauweise-stat">
+            <div class="bauweise-stat-value">∞</div>
+            <div class="bauweise-stat-label">Serienfähig</div>
+            <p>Hochpräzise, reproduzierbar, qualitätsgesichert.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Geschäftsmodelle / Markt -->
+<section class="business" id="markt">
+  <div class="container">
+    <span class="section-eyebrow reveal">Geschäftsmodelle</span>
+    <h2 class="section-title display-font reveal">
+      Sechs Möglichkeiten<br>zur <em>Skalierung.</em>
+    </h2>
+    <p class="section-sub reveal">
+      T Chesa ist kein Nischenprodukt und erlaubt vielfältige Markteintrittsstrategien — vom klassischen Direktverkauf bis zum Lizenzmodell.
+    </p>
+
+    <div class="business-grid">
+      <div class="business-card reveal">
+        <div class="business-num">01</div>
+        <h3>Verkauf der Häuser</h3>
+        <p>Vermarktung und Vertrieb von Wohnimmobilien direkt an Endkunden.</p>
+      </div>
+      <div class="business-card reveal">
+        <div class="business-num">02</div>
+        <h3>Lizenzmodell</h3>
+        <p>Nutzungsrechte für die geschützte Bauweise — Skalierbarkeit durch Lizenzierung <em>(Patent pending)</em>.</p>
+      </div>
+      <div class="business-card reveal">
+        <div class="business-num">03</div>
+        <h3>Joint Ventures</h3>
+        <p>Partnerschaftliche Projekte mit Bauträgern. Ressourcen und Know-how kombiniert.</p>
+      </div>
+      <div class="business-card reveal">
+        <div class="business-num">04</div>
+        <h3>Projektentwicklung</h3>
+        <p>Eigene Quartiere und Neubaugebiete. Ganzheitliche Stadtentwicklung mit autarkem Standard.</p>
+      </div>
+      <div class="business-card reveal">
+        <div class="business-num">05</div>
+        <h3>Tiny Houses</h3>
+        <p>Kleine, mobile Wohneinheiten für flexible Wohnformen und Nischenmärkte.</p>
+      </div>
+      <div class="business-card reveal">
+        <div class="business-num">06</div>
+        <h3>Dachaufstockung</h3>
+        <p>Nachverdichtung im urbanen Raum — Schaffung neuen Wohnraums auf bestehenden Strukturen.</p>
+      </div>
+    </div>
+
+    <div class="market-content">
+      <div class="market-pills reveal">
+        <div class="market-pill">
+          <div class="market-pill-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="market-pill-text">
+            <h4>Energiekrise</h4>
+            <p>Steigende Energiekosten treiben die Nachfrage nach autarken Lösungen.</p>
+          </div>
+        </div>
+        <div class="market-pill">
+          <div class="market-pill-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="market-pill-text">
+            <h4>Nachhaltigkeit</h4>
+            <p>Verschärfte CO₂-Vorgaben und Klimaziele machen das Konzept regulatorisch zukunftsfest.</p>
+          </div>
+        </div>
+        <div class="market-pill">
+          <div class="market-pill-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <div class="market-pill-text">
+            <h4>Urbanisierung</h4>
+            <p>Wohnraummangel in Städten erfordert neue, schnell skalierbare Bauformen.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="market-quote reveal">
+        <div class="market-quote-label">Marktpotenzial</div>
+        <h3>Ein Markt im <em>Milliarden­bereich</em> — EU und global.</h3>
+        <p>
+          T Chesa positioniert sich an der Schnittstelle von Energieinnovation, Nachhaltigkeit und Health Living. Drei Megatrends, ein integriertes Produkt — bereit für den Massenmarkt.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Founder & T Chesa Konzept -->
+<section class="founder">
+  <div class="container">
+    <span class="section-eyebrow reveal">Das T Chesa Konzept</span>
+    <h2 class="section-title display-font reveal">
+      Aus dem Energiemarkt<br>für die <em>Energiewende.</em>
+    </h2>
+
+    <div class="founder-content">
+      <div class="founder-portrait-block reveal">
+        <div class="founder-portrait">
+          <img src="assets/daniel.jpg" alt="Daniel Talleur, Geschäftsführer T Chesa" />
+        </div>
+        <div class="founder-portrait-info">
+          <span class="founder-label">Der Gründer</span>
+          <h3>Daniel Talleur</h3>
+          <p class="founder-role">Geschäftsführer · T Chesa</p>
+          <p class="founder-quote-inline">
+            „Aus dem tiefen Verständnis des Energiemarktes entstand die Idee, energieautarke und nachhaltige Häuser zu bauen — Häuser, die nicht nur ein Zuhause sind, sondern ein Statement für die Zukunft des Wohnens."
+          </p>
+        </div>
+      </div>
+
+      <div class="founder-bio founder-bio-single reveal">
+        <div>
+          <h4>Das T Chesa Konzept</h4>
+          <p>
+            Durch die familiäre Verbindung zu dem Gründer des größten Ökostromanbieters Deutschlands entwickelte sich über mehr als 30 Jahre ein tiefes Verständnis für den Energiemarkt. Daniel Talleur hat mit T Chesa bereits drei Bauprojekte erfolgreich umgesetzt. Ein durchdachtes, technisch ausgereiftes und wirtschaftlich hochattraktives Konzept steht somit bereit für die nächste Wachstumsphase.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-content">
+    <h2 class="display-font">Lassen Sie uns die Zukunft<br>des Wohnens <em>gemeinsam</em> bauen.</h2>
+    <p>Wir freuen uns auf den Austausch mit Investoren, Partnern und Visionären, die die Wohnimmobilie der Zukunft mitgestalten möchten.</p>
+
+    <div class="cta-buttons">
+      <a href="#" class="btn-primary" data-open-contact>Kontakt aufnehmen <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <img src="assets/logo.svg" alt="T Chesa" />
+  <p style="margin-bottom: 16px;">T Chesa GmbH · Feldbrunnenstraße 7 · 20148 Hamburg · Geschäftsführer: Daniel Talleur</p>
+  <p>© 2026 T Chesa GmbH. Alle Rechte vorbehalten.</p>
+  <p>HRB 97924 · Amtsgericht Hamburg</p>
+</footer>
+
+<!-- Floating Contact Widget -->
+<div class="contact-widget" id="contactWidget">
+  <div class="contact-panel" role="dialog" aria-label="Kontakt">
+    <div class="contact-header">
+      <div class="contact-header-top">
+        <div class="contact-avatar">DT</div>
+        <div class="contact-avatar-info">
+          <strong>Daniel Talleur</strong>
+          <span>Geschäftsführer · Online</span>
+        </div>
+      </div>
+      <h3>Lassen Sie uns <em>sprechen.</em></h3>
+    </div>
+    <div class="contact-body">
+      <a href="mailto:dt@t-chesa.com?subject=Anfrage%20T Chesa%20Investoren-Pitch&body=Sehr%20geehrter%20Herr%20Talleur%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20das%20T Chesa%20Konzept%20und%20w%C3%BCrde%20gerne%20mehr%20erfahren.%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen" class="contact-option" data-track="email">
+        <div class="contact-option-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div class="contact-option-text">
+          <strong>E-Mail schreiben</strong>
+          <span>dt@t-chesa.com</span>
+        </div>
+        <svg class="contact-option-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      <a href="tel:+494032086600" class="contact-option" data-track="phone">
+        <div class="contact-option-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <div class="contact-option-text">
+          <strong>Direkt anrufen</strong>
+          <span>+49 40 320 866-0</span>
+        </div>
+        <svg class="contact-option-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      <a href="https://www.google.com/maps/search/?api=1&query=Feldbrunnenstra%C3%9Fe+7+20148+Hamburg" target="_blank" rel="noopener" class="contact-option">
+        <div class="contact-option-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="contact-option-text">
+          <strong>Standort</strong>
+          <span>Feldbrunnenstraße 7, 20148 Hamburg</span>
+        </div>
+        <svg class="contact-option-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+    <div class="contact-footer">
+      Wir antworten innerhalb von 24 Stunden
+    </div>
+  </div>
+
+  <div class="contact-fab" id="contactFab">
+    <button type="button" class="contact-fab-toggle" id="contactToggle" aria-label="Kontakt öffnen" aria-expanded="false">
+      <span class="contact-fab-label">Kontakt</span>
+      <svg class="icon-chat" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <span class="contact-fab-actions">
+      <a href="mailto:dt@t-chesa.com?subject=Anfrage%20T Chesa%20Investoren-Pitch&body=Sehr%20geehrter%20Herr%20Talleur%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20das%20T Chesa%20Konzept%20und%20w%C3%BCrde%20gerne%20mehr%20erfahren.%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen" class="contact-quick" aria-label="E-Mail schreiben" data-track="email-quick">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+      <a href="tel:+494032086600" class="contact-quick" aria-label="Anrufen" data-track="phone-quick">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+      </a>
+    </span>
+  </div>
+</div>
+
+<script>
+  // VIBECODE: animate <em> tags when they scroll into view
+  const vibeObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const delay = parseFloat(entry.target.dataset.vibeDelay || 0);
+        setTimeout(() => entry.target.classList.add('vibe-on'), delay);
+      } else if (entry.boundingClientRect.top > 0) {
+        // Reset only when scrolled back up past the element
+        entry.target.classList.remove('vibe-on');
+      }
+    });
+  }, { threshold: 0.5, rootMargin: '0px 0px -8% 0px' });
+
+  document.querySelectorAll('em').forEach((el) => {
+    // Skip ems inside the floating contact widget — always styled
+    if (el.closest('.contact-widget')) return;
+    // Tiny stagger for sibling em tags
+    const siblings = el.parentElement.querySelectorAll(':scope > em');
+    if (siblings.length > 1) {
+      Array.from(siblings).forEach((s, idx) => {
+        s.dataset.vibeDelay = idx * 80;
+      });
+    }
+    vibeObserver.observe(el);
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+
+  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+  // Stagger child elements
+  document.querySelectorAll('.features-grid, .tech-grid, .projects-grid, .business-grid, .market-pills').forEach((grid) => {
+    Array.from(grid.children).forEach((child, i) => {
+      if (child.classList.contains('reveal')) {
+        child.style.transitionDelay = `${i * 60}ms`;
+      }
+    });
+  });
+
+  // Floating contact widget toggle
+  const widget = document.getElementById('contactWidget');
+  const toggle = document.getElementById('contactToggle');
+
+  // Subtle haptic feedback on supported devices (Android)
+  function haptic(ms) {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(ms); } catch (e) {}
+    }
+  }
+
+  function openWidget() {
+    widget.classList.add('open');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Kontakt schließen');
+    haptic(8);
+  }
+
+  function closeWidget() {
+    widget.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Kontakt öffnen');
+  }
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    widget.classList.contains('open') ? closeWidget() : openWidget();
+  });
+
+  // Quick-action shortcuts on the FAB itself (mobile) — let them navigate naturally
+  // but stop propagation so the toggle doesn't fire and the outside-click doesn't either
+  document.querySelectorAll('.contact-quick').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.stopPropagation();
+      haptic(12);
+      // The href (mailto:/tel:) handles the actual action — iOS/Android opens
+      // the native mail composer or phone dialer with prefilled values.
+    });
+  });
+
+  // Track interactions on the in-panel options too (haptic + close panel after tap)
+  document.querySelectorAll('.contact-option').forEach((link) => {
+    link.addEventListener('click', () => {
+      haptic(12);
+      // Don't close immediately — let the OS handoff happen first
+      setTimeout(closeWidget, 300);
+    });
+  });
+
+  // Trigger widget from any [data-open-contact] link
+  document.querySelectorAll('[data-open-contact]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openWidget();
+    });
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (widget.classList.contains('open') && !widget.contains(e.target)) {
+      closeWidget();
+    }
+  });
+
+  // Close on ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && widget.classList.contains('open')) {
+      closeWidget();
+      toggle.focus();
+    }
+  });
+</script>
+
+</body>
+</html>
